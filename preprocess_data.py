@@ -14,6 +14,54 @@ import sys
 # Column 6: Last Acceptable Candidate
 # Column 7: First Choice (Assigned to numbers according to indices above)
 
+true_gender_percentage = [.47, .53]
+true_party_percentage = [.36, .33, .31]
+true_racial_percentage = [.71, .12, .11, .04, .03]
+true_age_percentage = [.19, .25, .40, .16]
+
+def compute_voter_statistics(data):
+    gender_percentage = np.zeros(2)
+    party_percentage = np.zeros(3)
+    racial_percentage = np.zeros(5) # To represent voting data, 0 = White, 1 = Black/African American, 2 = Latino, 3 = Asian, 4 = Other
+    age_percentage = np.zeros(4)
+
+    for i in range(len(data)):
+        if data[i][0] > 0:
+            age_percentage[data[i][0] - 1] += 1
+
+        if data[i][1] == 0:
+            gender_percentage[0] += 1
+        else:
+            gender_percentage[1] += 1
+
+        if data[i][2] == 2 or data[i][2] == 4:
+            racial_percentage[4] += 1
+        elif data[i][2] == 5:
+            racial_percentage[2] += 1
+        else:
+            racial_percentage[data[i][2]] += 1
+
+        party_percentage[data[i][3]] += 1
+
+    gender_percentage /= len(data)
+    party_percentage /= len(data)
+    racial_percentage /= len(data)
+    age_percentage /= len(data)
+
+    gender_percentage_correcter = true_gender_percentage / gender_percentage
+    party_percentage_correcter = np.zeros(3)
+    racial_percentage_correcter = np.zeros(5)
+    age_percentage_correcter = np.zeros(4)
+    for i in range(len(party_percentage)):
+        party_percentage_correcter[i] = true_party_percentage[i] / party_percentage[i]
+    for i in range(len(racial_percentage)):
+        racial_percentage_correcter[i] = true_racial_percentage[i] / racial_percentage[i]
+    for i in range(len(age_percentage)):
+        age_percentage_correcter[i] = true_age_percentage[i] / age_percentage[i]
+
+    return gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter
+
+
 def compute_ranked_list(df_rankings):
     ranked_list = np.zeros(len(df_rankings))
     for i in range(len(ranked_list)):
@@ -24,7 +72,6 @@ def compute_ranked_list(df_rankings):
 def process_csv(infile):
     df = pd.read_csv(infile)
     df = df.drop([0, 1], axis = 0)
-    print(df)
 
     data = []
     for i in range(len(df)):
