@@ -30,19 +30,32 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
             weights.append(corrected_vote)
             votes.append(ranked_list)
     for k in range(8):
-        first_votes = np.zeros(8)
-        for r in removed:
-            first_votes[r] = np.inf
-        for i in range(len(votes)):
-            vote = votes[i]
-            weight = weights[i]
-            for j in range(8):
-                if int(vote[j]) not in removed:
-                    first_votes[int(vote[j])] += weight
-                    break
-        least_first = np.argmin(first_votes)
-        removed.add(least_first)
-        ranks[least_first] = k+1
+        if k % 2 == 0:
+            first_votes = np.zeros(8)
+            for r in removed:
+                first_votes[r] = np.inf
+            for i in range(len(votes)):
+                vote = votes[i]
+                weight = weights[i]
+                for j in range(8):
+                    if int(vote[j]) not in removed:
+                        first_votes[int(vote[j])] += weight
+                        break
+            least_first = np.argmin(first_votes)
+            removed.add(least_first)
+            ranks[least_first] = k+1
+        else:
+            last_votes = np.zeros(8)
+            for i in range(len(votes)):
+                vote = votes[i]
+                weight = weights[i]
+                for j in reversed(range(8)):
+                    if int(vote[j]) not in removed:
+                        last_votes[int(vote[j])] += weight
+                        break
+            most_last = np.argmax(last_votes)
+            removed.add(most_last)
+            ranks[most_last] = k+1
     return ranks
 
 
