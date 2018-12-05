@@ -8,7 +8,7 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
     sum_acceptable_votes = np.zeros(8)
 
     for i in range(len(data)):
-        if data[i][0] != 0:
+        if data[i][0] != 0 and data[i][4] == 1:
             last_acceptable_candidate = data[i][6]
             if last_acceptable_candidate > 0:
                 ranked_list = data[i][5]
