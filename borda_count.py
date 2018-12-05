@@ -5,11 +5,18 @@ import postprocess_data as pp
 
 from preprocess_data import *
 
+def borda_score(vote):
+   #idxs = np.argsort(vote)
+   scores = np.zeros(8)
+   for i in range(len(vote)):
+        scores[int(vote[i])] = 8-i
+   return scores
+
 def compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter):
-    sum_plurality_votes = np.zeros(8)
+    sum_borda_scores = np.zeros(8)
 
     for i in range(len(data)):
-        if data[i][0] != 0: #and data[i][4] != 0:
+        if data[i][0] != 0: 
             ranked_list = data[i][5]
             party = data[i][3]
             age = data[i][0] - 1
@@ -23,8 +30,10 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
                 gender = 1
 
             corrected_vote = gender_percentage_correcter[gender] * party_percentage_correcter[party] * racial_percentage_correcter[race] * age_percentage_correcter[age]
-            sum_plurality_votes[int(ranked_list[0])] += corrected_vote
-    return sum_plurality_votes
+            borda_scores = borda_score(ranked_list)
+            sum_borda_scores = np.add(sum_borda_scores, borda_scores*corrected_vote)
+            #sum_plurality_votes[int(ranked_list[0])] += corrected_vote
+    return sum_borda_scores
 
 
 def main():

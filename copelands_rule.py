@@ -5,11 +5,16 @@ import postprocess_data as pp
 
 from preprocess_data import *
 
+
+
+
 def compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter):
-    sum_plurality_votes = np.zeros(8)
+    condorcet_wins = np.zeros(8)
+    condorcet_losses = np.zeros(8)
+    condorcet_count = np.zeros((8,8))
 
     for i in range(len(data)):
-        if data[i][0] != 0: #and data[i][4] != 0:
+        if data[i][0] != 0: 
             ranked_list = data[i][5]
             party = data[i][3]
             age = data[i][0] - 1
@@ -22,9 +27,35 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
             if gender != 0:
                 gender = 1
 
-            corrected_vote = gender_percentage_correcter[gender] * party_percentage_correcter[party] * racial_percentage_correcter[race] * age_percentage_correcter[age]
-            sum_plurality_votes[int(ranked_list[0])] += corrected_vote
-    return sum_plurality_votes
+        corrected_vote = gender_percentage_correcter[gender] * party_percentage_correcter[party] * racial_percentage_correcter[race] * age_percentage_correcter[age]
+        
+        for j in range(len(ranked_list)):
+            rank_j = np.where(ranked_list==j)
+            for k in range(j+1, len(ranked_list)):
+                rank_k = np.where(ranked_list==k)
+                if rank_j < rank_k:
+                    condorcet_count[j][k] += corrected_vote
+                elif rank_j > rank_k:
+                    condorcet_count[k][j] += corrected_vote
+        
+
+    for j in range(len(ranked_list)):
+        for k in range(j+1, len(ranked_list)):
+            if condorcet_count[j][k] > condorcet_count[k][j]:
+                condorcet_wins[j] += 1
+                condorcet_losses[k] += 1
+            if condorcet_count[j][k] < condorcet_count[k][j]:
+                condorcet_wins[k] += 1
+                condorcet_losses[j] += 1
+
+    print(condorcet_wins)
+    print(condorcet_losses)
+
+    net_scores = np.zeros(8)
+    for i in range(8):
+        net_scores[i] = condorcet_wins[i] - condorcet_losses[i]
+
+    return net_scores
 
 
 def main():

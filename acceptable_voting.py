@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
+import postprocess_data as pp
 
 from preprocess_data import *
 
@@ -40,7 +41,7 @@ def main():
     gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter = compute_voter_statistics(data)
     sum_acceptable_votes = compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
 
-    print(sum_acceptable_votes)
+    pp.print_ranked_outcomes(sum_acceptable_votes)
 
 if __name__ == '__main__':
     main()
