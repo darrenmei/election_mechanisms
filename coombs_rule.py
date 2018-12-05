@@ -7,6 +7,10 @@ from preprocess_data import *
 
 def compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter):
     sum_plurality_votes = np.zeros(8)
+    votes = []
+    removed = set()
+    weights = []
+    ranks = np.zeros(8)
 
     for i in range(len(data)):
         if data[i][0] != 0: #and data[i][4] != 0:
@@ -23,8 +27,21 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
                 gender = 1
 
             corrected_vote = gender_percentage_correcter[gender] * party_percentage_correcter[party] * racial_percentage_correcter[race] * age_percentage_correcter[age]
-            sum_plurality_votes[int(ranked_list[0])] += corrected_vote
-    return sum_plurality_votes
+            weights.append(corrected_vote)
+            votes.append(ranked_list)
+    for k in range(8):
+        last_votes = np.zeros(8)
+        for i in range(len(votes)):
+            vote = votes[i]
+            weight = weights[i]
+            for j in reversed(range(8)):
+                if int(vote[j]) not in removed:
+                    last_votes[int(vote[j])] += weight
+                    break
+        most_last = np.argmax(last_votes)
+        removed.add(most_last)
+        ranks[most_last] = k+1
+    return ranks
 
 
 def main():
@@ -46,3 +63,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
