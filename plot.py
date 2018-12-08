@@ -10,7 +10,7 @@ to_candidate = ["Gary Johnson", "Hillary Clinton", "Jill Stein", "Donald Trump",
 
 def plotbar(xbins, diffs, slabel, bcolor):
     #plt.hist(diffs, bins=np.arange(min(diffs), max(diffs) + binwidth, binwidth), alpha = .5, align='left', color=bcolor, label=slabel)
-    plt.bar(xbins, diffs, alpha = 1.0, width=.1, color=bcolor, label=slabel)
+    plt.bar(xbins, diffs, alpha = 1.0, width=.075, color=bcolor, label=slabel)
 
 
 
@@ -49,12 +49,12 @@ def plotvotes(data, gender_percentage_correcter, party_percentage_correcter, rac
     print(vote_counts)
     colors = ['#5099ff', 'red', 'orange', 'yellow', 'green', 'purple', 'pink', 'brown']
     for i in range(8):
-        plotbar(np.arange(2,10) - .95 + (i/8.), vote_counts[i], to_candidate[i], colors[i])
+        plotbar(np.arange(2,10) - 1.25 + (i/14.), vote_counts[i], to_candidate[i], colors[i])
     #plotbootstrap([ms, meds, data, data0], ["mean", 'median', 'true sample', 'filtered sample'], ['red', 'blue', 'green', '#5099ff'])
-    plt.xlim(left=1, right=9)
+    plt.xlim(left=0, right=9)
     plt.xlabel("vote rank")
     plt.ylabel("frequency")
-    plt.legend(loc='upper right')
+    plt.legend(loc='upper center')
     plt.show()
 
     pp.print_ranked_outcomes(sum_acceptable_votes)

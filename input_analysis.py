@@ -5,14 +5,15 @@ import postprocess_data as pp
 
 from preprocess_data import *
 
-def compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter):
-    polarizations = np.zeros(8)
+to_candidate = ["Gary Johnson", "Hillary Clinton", "Jill Stein", "Donald Trump", "Marco Rubio", "Bernie Sanders", "Ted Cruz", "John Kasich"]
 
-    acceptable_candidate_mean = 0
-    corrected_vote_sum = 0
+def compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter):
+    switches = np.zeros((8,8))
+
     for i in range(len(data)):
-        if data[i][0] != 0:
+        if data[i][0] != 0: #and data[i][4] != 0:
             ranked_list = data[i][5]
+            first_round_vote = data[i][7]
             party = data[i][3]
             age = data[i][0] - 1
             race = data[i][2]
@@ -23,18 +24,22 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
             gender = data[i][1]
             if gender != 0:
                 gender = 1
+
             corrected_vote = gender_percentage_correcter[gender] * party_percentage_correcter[party] * racial_percentage_correcter[race] * age_percentage_correcter[age]
 
-            acceptable_candidate_mean += corrected_vote * data[i][6]
-            corrected_vote_sum += corrected_vote
+            top_vote = ranked_list[0]
+            if top_vote != first_round_vote:
+                switches[int(top_vote)][int(first_round_vote)] += corrected_vote
+                if top_vote == 3. and first_round_vote == 5.:
+                    print(ranked_list)
+                    print(data[i][6])
+    for i in range(8):
+        for j in range(8):
+            if switches[i][j] > 5:
+                print(str(switches[i][j]) + " switch from " + to_candidate[i] + " to " + to_candidate[j])
 
-            for j in range(8):
-                curr_candidate = ranked_list[j]
-                if j > data[i][6]:
-                    polarizations[int(curr_candidate)] -= corrected_vote * ((np.abs(j - data[i][6])**2))
-    #print(acceptable_candidate_mean / corrected_vote_sum)
-    print(polarizations)
-    return polarizations
+    print(sum(sum(switches)))
+    return switches 
 
 
 def main():
@@ -46,11 +51,11 @@ def main():
 
     data = process_csv(infile)
     gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter = compute_voter_statistics(data)
-    polarizations = compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
+    sum_plurality_votes = compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
 
-
+    
     #print(sum_plurality_votes)
-    pp.print_ranked_outcomes(polarizations)
+    #pp.print_ranked_outcomes(sum_plurality_votes)
     #print(sum(sum_plurality_votes))
     #print(len(data))
 

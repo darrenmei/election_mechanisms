@@ -12,6 +12,7 @@ import borda_count as borda
 import simple_plurality as sp
 
 import moderation_rule as moderate
+import polarization_calculator as pc 
 
 from preprocess_data import *
 
@@ -35,40 +36,37 @@ def main():
     copelands_votes = copeland.compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
     borda_votes = borda.compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
     moderation_votes = moderate.compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
+    polarization_calculator = pc.compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
+
 
     
-    print("#####plurality votes#####")
-    pp.print_ranked_outcomes(plurality_votes)
+    pp.latex_table(plurality_votes, "Simple Plurality")
     print('\n')
     
-    print("#####acceptable votes#####")
-    pp.print_ranked_outcomes(acceptable_votes)
+    pp.latex_table(acceptable_votes, "Acceptable Voting")
     print('\n')
 
-    print("#####coombs rule votes#####")
-    pp.print_ranked_outcomes(coombs_votes)
+    pp.latex_table(coombs_votes, "Coombs' Method")
     print('\n')
 
-    print("#####instant run off votes#####")
-    pp.print_ranked_outcomes(run_off_votes)
+    pp.latex_table(run_off_votes, "Ranked Choice")
     print('\n')
 
-    print("#####french election votes#####")
-    pp.print_ranked_outcomes(french_votes)
+    #print("#####french election votes#####")
+    #pp.latex_table(french_votes)
+    #print('\n')
+
+    pp.latex_table(copelands_votes, "Copeland's Rule")
     print('\n')
 
-    print("#####copelands rule votes#####")
-    pp.print_ranked_outcomes(copelands_votes)
+    pp.latex_table(borda_votes, "Borda Count")
     print('\n')
 
-    print("#####borda count votes#####")
-    pp.print_ranked_outcomes(borda_votes)
+    pp.latex_table(moderation_votes, "Moderation Rule")
     print('\n')
 
-    print("#####*moderation rule votes#####")
-    pp.print_ranked_outcomes(moderation_votes)
+    pp.latex_table(polarization_calculator, 'Polarlization Rule')
     print('\n')
-
 
 if __name__ == '__main__':
     main()

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
+import postprocess_data as pp
 
 from preprocess_data import *
 
@@ -9,7 +10,7 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
 
     # first round
     for i in range(len(data)):
-        if data[i][0] != 0 and data[i][4] != 0:
+        if data[i][0] != 0: #and data[i][4] != 0:
             first_round_vote = data[i][7]
             party = data[i][3]
             age = data[i][0] - 1
@@ -24,7 +25,6 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
 
             corrected_vote = gender_percentage_correcter[gender] * party_percentage_correcter[party] * racial_percentage_correcter[race] * age_percentage_correcter[age]
             sum_plurality_votes[int(first_round_vote)] += corrected_vote
-
     top_two_candidates = [0, 0]
     for i in range(8):
         if sum_plurality_votes[i] > (len(data) / 2):
@@ -65,7 +65,9 @@ def compute_votes(data, gender_percentage_correcter, party_percentage_correcter,
                     runoff_votes[1] += corrected_vote
                     found_first = True
                 j += 1
-    return runoff_votes
+    #return runoff_votes
+    print(runoff_votes)
+    return sum_plurality_votes
 
 
 def main():
@@ -77,10 +79,9 @@ def main():
 
     data = process_csv(infile)
     gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter = compute_voter_statistics(data)
-    sum_plurality_votes = compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
+    votes = compute_votes(data, gender_percentage_correcter, party_percentage_correcter, racial_percentage_correcter, age_percentage_correcter)
 
-    print(sum_plurality_votes)
-
+    pp.latex_table(votes, "Plurality with Runoff")
 
 if __name__ == '__main__':
     main()

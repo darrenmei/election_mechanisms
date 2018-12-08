@@ -24,7 +24,37 @@ def print_ranked_outcomes(arr):
             if arr[i] > arr[max_idx]:
                 max_idx = i
         sorted_arr.append(to_candidate[max_idx] + ": " + str(arr[max_idx]))
-        arr[max_idx] = -999
+        arr[max_idx] = -99999
     
     for msg in sorted_arr:
-        print(msg) 
+        print(msg)
+
+def latex_table(arr, mechanism):
+    sorted_arr = []
+    while len(sorted_arr) < 8:
+        max_idx = 0
+        for i in range(len(arr)):
+            if arr[i] > arr[max_idx]:
+                max_idx = i
+        #sorted_arr.append(to_candidate[max_idx] + " & " + str(round(arr[max_idx],2)))
+        sorted_arr.append(to_candidate[max_idx] + " & " + str(int(arr[max_idx])))
+        arr[max_idx] = -99999
+    
+    pre = r"""
+    \begin{table}[h!]
+    \centering
+    {\begin{tabular}{| c || c | c |}
+           \hline 
+     Ranking & Candidate & Score \\
+       \hline """
+    for i in range(len(arr)):
+        pre += '\n'
+        pre += str(i+1) + r' & ' + sorted_arr[i] + r'\\'
+                   
+    pre += r"""\hline 
+    \end{tabular}}
+    \caption{""" + mechanism + r"""}
+       \label{table:time_per}
+       \end{table}"""
+
+    print(pre)
